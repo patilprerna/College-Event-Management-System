@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Admin Dashboard</h1>
+        <a href="{{ url_for('new_event') }}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Create New Event</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>Manage Events</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Registrations</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.date.strftime('%d %b, %Y') }}</td>
+                            <td>{{ event.location }}</td>
+                            <td>
+                                <span class="badge bg-primary rounded-pill">{{ event_counts[event.id] }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('update_event', event_id=event.id) }}" class="btn btn-sm btn-outline-info"><i class="bi bi-pencil-square"></i> Edit</a>
+                                <!-- Delete Button trigger modal -->
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{event.id}}">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                                
+                                <!-- Modal -->
+                                <div class="modal fade" id="deleteModal{{event.id}}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                        Are you sure you want to delete the event: <strong>{{ event.name }}</strong>? This action cannot be undone.
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <form action="{{ url_for('delete_event', event_id=event.id) }}" method="POST">
+                                            <input type="submit" class="btn btn-danger" value="Delete">
+                                        </form>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

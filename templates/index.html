@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="text-center mb-5">
+        <h1 class="display-4">Upcoming College Events</h1>
+        <p class="lead text-muted">Join us for exciting events and activities happening on campus.</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for event in events %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ event.name }}</h5>
+                    <p class="card-subtitle mb-2 text-muted">
+                        <i class="bi bi-calendar-event"></i> {{ event.date.strftime('%d %B, %Y') }} 
+                        | <i class="bi bi-geo-alt-fill"></i> {{ event.location }}
+                    </p>
+                    <p class="card-text flex-grow-1">{{ event.description|truncate(120) }}</p>
+                    
+                    {% if current_user.is_authenticated %}
+                        {% set is_registered = false %}
+                        {% for reg in current_user.registrations %}
+                            {% if reg.event_id == event.id %}
+                                {% set is_registered = true %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if not is_registered %}
+                            <form action="{{ url_for('register_for_event', event_id=event.id) }}" method="POST" class="mt-auto">
+                                <button type="submit" class="btn btn-primary w-100">Register Now</button>
+                            </form>
+                        {% else %}
+                            <button type="button" class="btn btn-success w-100 mt-auto" disabled>Already Registered</button>
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary mt-auto">Login to Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">No upcoming events found. Check back later!</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}
